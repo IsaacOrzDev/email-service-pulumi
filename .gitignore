@@ -1,0 +1,4 @@
+*.pyc
+venv/
+testing.json
+.vscode
