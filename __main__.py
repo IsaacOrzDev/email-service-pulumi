@@ -1,7 +1,7 @@
 """A Python Pulumi program"""
 
 import pulumi
-from pulumi_aws import sns, sqs, iam, lambda_
+from pulumi_aws import sns, sqs, iam, lambda_, iam
 import src.templates
 
 sns_topic = sns.Topic("email-topic")
@@ -91,3 +91,27 @@ mapping = lambda_.EventSourceMapping(
     event_source_arn=sqs_queue.arn,
     function_name=lambda_function.arn
 )
+
+
+publish_to_sns_policy = iam.get_policy_document(statements=[
+    iam.GetPolicyDocumentStatementArgs(
+        actions=["sns:Publish"],
+        resources=[sns_topic.arn],
+    ),
+])
+
+iam_user = iam.User('publish-message-iam-user')
+
+user_keys = iam.AccessKey('iam-user-key', user=iam_user.name)
+
+# Create the IAM Policy with the defined document
+iam_policy = iam.Policy('allow-sns-publish-policy',
+                        policy=publish_to_sns_policy.json)
+
+# Attach the policy to the user
+policy_attachment = iam.UserPolicyAttachment('user-policy-attachment',
+                                             user=iam_user.name,
+                                             policy_arn=iam_policy.arn)
+
+pulumi.export('accessKeyID', user_keys.id)
+pulumi.export('secretAccessKey', user_keys.secret)
