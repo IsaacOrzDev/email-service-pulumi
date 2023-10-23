@@ -14,7 +14,13 @@ sketch_blend_email_template = ses.Template(
     name="sketch-blend-login-template",
     subject="{{subject}}",
     html="""
-    <h3>Sketch Blend - Please login with this <a href="{{url}}">link</a></h3>
-    <img src="https://personal-images.isaacdev.net/sketch_blend_banner.png" />
+    <body>
+        <h3>Sketch Blend - Please login with this <a href="{{url}}">link</a></h3>
+        <img src="https://sketch-blend.isaacdev.net/static/images/email_banner.png" />
+        <p>
+        Sketch Blend is a demo website offers users the ability to draw sketches, generate new images based on their sketches using Stable Diffusion, and post these images with others.
+        </p>
+        <span style="opacity: 0"> {{time}} </span>
+    </body>
     """
 )
